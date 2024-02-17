@@ -12,28 +12,30 @@ export default function Home() {
   const [outtime, setOutTime] = useState("");
   const [isAvailable, setIsAvailable] = useState(true);
   const [conflictingBooking, setConflictingBooking] = useState(null);
+  const [today] = useState(new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
     if (!intime || !outtime) return;
-
+  
     const fetchData = async () => {
       const bookingsRef = firebase.database().ref('bookings');
       const snapshot = await bookingsRef.once('value');
       const bookings = snapshot.val();
       
       if (!bookings) return;
-
+  
       const conflict = Object.values(bookings).find(booking => {
-        const bookingStartDate = new Date(booking.date + 'T' + booking.intime);
-        const bookingEndDate = new Date(booking.date + 'T' + booking.outtime);
-        const selectedStartDate = new Date(intime);
-        const selectedEndDate = new Date(outtime);
-
         return (
-          (selectedStartDate <= bookingEndDate && selectedEndDate >= bookingStartDate)
+          booking.date === today &&
+          (
+            (booking.intime <= intime && intime <= booking.outtime) ||
+            (booking.intime <= outtime && outtime <= booking.outtime) ||
+            (intime <= booking.intime && booking.intime <= outtime) ||
+            (intime <= booking.outtime && booking.outtime <= outtime)
+          )
         );
       });
-
+  
       if (conflict) {
         setIsAvailable(false);
         setConflictingBooking(conflict);
@@ -42,23 +44,23 @@ export default function Home() {
         setConflictingBooking(null);
       }
     };
-
+  
     fetchData();
-  }, [intime, outtime]);
+  }, [intime, outtime, today]);
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
     if (isAvailable) {
-      const date = new Date().toISOString().split('T')[0]; // Get current date
       firebase.database().ref("bookings").push({
         email,
         studentId,
         fullName,
         batch,
-        date,
         intime,
         outtime,
+        date: today, // Include today's date in the booking
       })
       .then(() => {
         console.log("Booking confirmed!");
@@ -75,7 +77,6 @@ export default function Home() {
     }
   };
 
-  const today = new Date().toISOString().split('T')[0]; // Get current date
   return (
     <div
       style={{
@@ -91,7 +92,7 @@ export default function Home() {
         
         {/* Form */}
         <form className="space-y-4" onSubmit={handleSubmit}>
-        <div>
+          <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">NSBM Student Email</label>
             <input
               type="email"
@@ -144,16 +145,14 @@ export default function Home() {
             />
           </div>
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">In Time</label>
+            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Date</label>
             <input
-              type="date"
+              type="text"
               id="date"
               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500"
               style={{ width: '100%', height: '45px', fontSize: '1rem', maxWidth: '100%' }}
-              placeholder="Enter In time"
-              required
-              value={today} max={today}
-              onChange={(e) => setInTime(e.target.value)}
+              value={today}
+              disabled // Disable editing of the date
             />
           </div>
           <div>
@@ -191,8 +190,8 @@ export default function Home() {
         </form>
 
         {!isAvailable && conflictingBooking && (
-        <p>Study room is already booked until {conflictingBooking.outtime}.</p>
-      )}
+          <p>Study room is already booked until {conflictingBooking.outtime}.</p>
+        )}
       </div>
     </div>
   );

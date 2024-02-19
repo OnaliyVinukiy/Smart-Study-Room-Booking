@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useMsal, useIsAuthenticated } from "@azure/msal-react"; // Import useIsAuthenticated
+import { InteractionStatus } from "@azure/msal-browser";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import 'firebase/compat/auth';
 
-export default function Home() {
+const Home = () => {
+  const { instance, accounts, inProgress } = useMsal();
+  console.log("Accounts:", accounts);
+  console.log("InProgress:", inProgress);
+  const isAuthenticated = useIsAuthenticated(); // Use useIsAuthenticated
   const [email, setEmail] = useState("");
   const [studentId, setStudentId] = useState("");
   const [fullName, setFullName] = useState("");
@@ -13,7 +19,8 @@ export default function Home() {
   const [isAvailable, setIsAvailable] = useState(true);
   const [conflictingBooking, setConflictingBooking] = useState(null);
   const [today] = useState(new Date().toISOString().split('T')[0]);
-
+  
+ 
   useEffect(() => {
     if (!intime || !outtime) return;
   
@@ -78,6 +85,10 @@ export default function Home() {
   };
 
   return (
+    <div>
+    {accounts.length > 0 ? (
+      <div>
+        <h1>Welcome, {accounts[0].name}</h1>
     <div
       style={{
         backgroundImage: `url("https://www.nsbm.ac.lk/wp-content/uploads/2021/08/About-Tab-1.jpg")`,
@@ -194,5 +205,18 @@ export default function Home() {
         )}
       </div>
     </div>
+    </div>
+    ) : (
+      <div>
+        {inProgress === InteractionStatus.None && (
+          <button onClick={() => instance.loginPopup()}>Login with Microsoft</button>
+        )}
+      </div>
+    )}
+    {!isAvailable && conflictingBooking && (
+        <p>Study room is already booked until {conflictingBooking.outtime}.</p>
+      )}
+    </div>
   );
 }
+export default Home;

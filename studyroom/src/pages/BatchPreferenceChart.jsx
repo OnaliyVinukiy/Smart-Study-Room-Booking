@@ -72,7 +72,3 @@ export default function StudyRoomBookingTrend() {
     </div>
   );
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 729dc394e633cf64efc157a47054d7278e504bb8

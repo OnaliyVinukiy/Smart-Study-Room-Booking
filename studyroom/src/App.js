@@ -3,8 +3,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MsalProvider } from "@azure/msal-react";
 import { PublicClientApplication } from "@azure/msal-browser"; // Import PublicClientApplication
 import Home from "./pages/Home";
+import Booking from './pages/Booking';
 import Header from "./components/Header";
 import BatchPreferenceChart from "./pages/BatchPreferenceChart";
+
 
 const msalConfig = {
   auth: {
@@ -24,6 +26,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/batchpreference" element={<BatchPreferenceChart />} />
+          <Route path="/Booking" element={<Booking />} />
         </Routes>
       </BrowserRouter>
     </MsalProvider>

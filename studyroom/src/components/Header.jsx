@@ -1,14 +1,19 @@
-import React from 'react'
+import React from 'react';
 import { useMsal } from "@azure/msal-react";
 
 function Header() {
-  const { accounts } = useMsal();
+  const { instance, accounts } = useMsal();
+
+  const handleLogout = () => {
+    instance.logout();
+    window.location.href = "/"; // Redirect to home page after logout
+  };
 
   if (accounts.length === 0) {
     return null; // Return nothing if user is not logged in
   }
+
   return (
-    
 
 <nav class="bg-white border-gray-200 dark:bg-gray-900">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -36,7 +41,15 @@ function Header() {
         <li>
           <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Contact Us</a>
         </li>
-        
+        <li className="mr-0">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-1.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 mr-0"
+        >
+          Logout
+        </button>
+        </li>
       </ul>
     </div>
   </div>

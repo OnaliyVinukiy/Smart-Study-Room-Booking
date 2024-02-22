@@ -22,6 +22,12 @@ function Booking() {
               <th scope="col" className="px-6 py-3">
                 Action
               </th>
+              <th scope="col" className="px-6 py-3">
+                Action
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -41,41 +47,14 @@ function Booking() {
               <td className="px-6 py-4">
                 <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
               </td>
-            </tr>
-            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                Microsoft Surface Pro
-              </th>
               <td className="px-6 py-4">
-                White
+                <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Cancel</a>
               </td>
               <td className="px-6 py-4">
-                Laptop PC
-              </td>
-              <td className="px-6 py-4">
-                $1999
-              </td>
-              <td className="px-6 py-4">
-                <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Leave</a>
               </td>
             </tr>
-            <tr className="bg-white dark:bg-gray-800">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                Magic Mouse 2
-              </th>
-              <td className="px-6 py-4">
-                Black
-              </td>
-              <td className="px-6 py-4">
-                Accessories
-              </td>
-              <td className="px-6 py-4">
-                $99
-              </td>
-              <td className="px-6 py-4">
-                <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-              </td>
-            </tr>
+            
           </tbody>
         </table>
       </div>

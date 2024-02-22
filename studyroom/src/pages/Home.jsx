@@ -85,24 +85,15 @@ const Home = () => {
   };
 
   return (
-    <div>
-    {accounts.length > 0 ? (
-      <div>
-        <h1>Welcome, {accounts[0].name}</h1>
-    <div
-      style={{
-        backgroundImage: `url("https://www.nsbm.ac.lk/wp-content/uploads/2021/08/About-Tab-1.jpg")`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-      className="min-h-screen flex flex-col justify-center py-8"
-    >
+    <div style={{ backgroundImage: `url("https://www.nsbm.ac.lk/wp-content/uploads/2021/08/About-Tab-1.jpg")`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} className="min-h-screen flex flex-col justify-center py-8 bg-gray-700">
       <div className="bg-white p-8 md:p-12 rounded-lg shadow-lg mx-auto max-w-md md:max-w-4xl m-20">
-        <h1 className="text-2xl md:text-4xl font-bold text-green-800 mb-6 text-center">Book a Study Room</h1>
-        
-        {/* Form */}
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        {accounts.length > 0 ? (
+          <>
+            <h1>Welcome, {accounts[0].name}</h1>
+            <h1 className="text-2xl md:text-4xl font-bold text-green-800 mb-6 text-center">Book a Study Room</h1>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+            
+           
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">NSBM Student Email</label>
             <input
@@ -201,21 +192,26 @@ const Home = () => {
         </form>
 
         {!isAvailable && conflictingBooking && (
-          <p>Study room is already booked until {conflictingBooking.outtime}.</p>
+              <p>Study room is already booked until {conflictingBooking.outtime}.</p>
+            )}
+          </>
+        ) : (
+          <>
+            <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-black md:text-5xl lg:text-6xl text-center">Welcome to Smart Study!</h1>
+            <p className="mb-8 text-lg font-normal text-gray-300 lg:text-xl sm:px-16 lg:px-48">Reserve a study room now</p>
+            <div className="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0">
+              {inProgress === InteractionStatus.None && (
+                <button className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900" onClick={() => instance.loginPopup()}>
+                  Login with Microsoft
+                  <svg className="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+          </>
         )}
       </div>
-    </div>
-    </div>
-    ) : (
-      <div>
-        {inProgress === InteractionStatus.None && (
-          <button onClick={() => instance.loginPopup()}>Login with Microsoft</button>
-        )}
-      </div>
-    )}
-    {!isAvailable && conflictingBooking && (
-        <p>Study room is already booked until {conflictingBooking.outtime}.</p>
-      )}
     </div>
   );
 }

@@ -1,6 +1,12 @@
 import React from 'react';
+import { useMsal } from "@azure/msal-react";
+
 
 function Footer() {
+    const { instance, accounts } = useMsal();
+  if (accounts.length === 0) {
+    return null; // Return nothing if user is not logged in
+  }
   return (
     <div>
       <footer className="bg-gray-800 shadow text-white m-4 md:m-auto">

@@ -8,7 +8,7 @@ function Footer() {
           <div className="sm:flex sm:items-center sm:justify-between">
             <a href="https://flowbite.com/" className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
               <img src="https://flowbite.com/docs/images/logo.svg" className="h-8" alt="Flowbite Logo" />
-              <span className="self-center text-2xl font-semibold whitespace-nowrap">Flowbite</span>
+              <span className="self-center text-2xl font-semibold whitespace-nowrap">SmartStudy</span>
             </a>
             <ul className="flex flex-wrap items-center justify-center mb-6 font-medium sm:mb-0">
               <li>
@@ -26,7 +26,7 @@ function Footer() {
             </ul>
           </div>
           <hr className="my-6 border-gray-200 sm:mx-auto lg:my-8" />
-          <span className="block text-sm text-gray-200 sm:text-center">© 2024 <a href="https://flowbite.com/" className="hover:underline">Smart Study Room</a>. All Rights Reserved.</span>
+          <span className="block text-sm text-gray-200 sm:text-center">© 2024 <a href="https://flowbite.com/" className="hover:underline">SmartStudy</a>. All Rights Reserved.</span>
         </div>
       </footer>
     </div>

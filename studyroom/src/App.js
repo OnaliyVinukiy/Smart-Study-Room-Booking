@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Booking from './pages/Booking';
 import Footer from "./components/Footer" ;
 import Header from "./components/Header";
+import About from "./pages/About" ;
 import BatchPreferenceChart from "./pages/BatchPreferenceChart";
 
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/batchpreference" element={<BatchPreferenceChart />} />
           <Route path="/Booking" element={<Booking />} />
+          <Route path="/About" element={<About />} />
         </Routes>
         <Footer />
       </BrowserRouter>

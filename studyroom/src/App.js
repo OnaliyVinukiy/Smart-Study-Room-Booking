@@ -28,8 +28,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/batchpreference" element={<BatchPreferenceChart />} />
           <Route path="/Booking" element={<Booking />} />
-          <Route path="/Footer" element={<Footer />} />
         </Routes>
+        <Footer />
       </BrowserRouter>
     </MsalProvider>
   );

@@ -1,16 +1,19 @@
 import React from "react";
+
 export default function About() {
-
-
   return (
-    <div class="bod mb-10">
+    <div className="bod mb-10">
+      <section
+        className="bg-center bg-no-repeat bg-gray-700 npm st bg-blend-multiply mt-12"
+        style={{
+          backgroundImage: `url("https://raw.githubusercontent.com/OnaliyVinukiy/Smart-Study-Room-Booking/main/studyroom/src/pages/about/uni.jpg")`,
+        }}
+      >
+        <div className="px-4 mx-auto max-w-screen-xl md:h-[20rem] sm:h-[15rem] text-center py-12 lg:py-20">
+          <h3 className="mt-8 text-3xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl">About Us</h3>
+        </div>
+      </section>
 
-        <section class="bg-center bg-no-repeat bg-[url()] bg-gray-700 bg-blend-multiply mt-12">
-            <div class="px-4 mx-auto max-w-screen-xl md:h-[20rem] sm:h-[15rem] text-center py-12 lg:py-20">
-                <h3 class="mt-8 text-3xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl">About Us</h3>
-                
-            </div>
-        </section>
 
       <div className="nsbm mt-5 flex justify-center items-center">
       </div>

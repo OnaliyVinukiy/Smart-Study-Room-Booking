@@ -10,4 +10,7 @@
 </ul>
 
 <h4>Features</h4>
+<ul>
+  <li>Collision free study room booking</li>
+</ul>
 

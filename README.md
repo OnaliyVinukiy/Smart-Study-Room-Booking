@@ -13,5 +13,6 @@
 <ul>
   <li>Collision free study room booking</li>
    <li>Edit and cancel bookings</li>
+<li>Easy login through NSBM Student Account</li>
 </ul>
 

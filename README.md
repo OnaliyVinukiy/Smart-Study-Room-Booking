@@ -3,3 +3,6 @@
 
 <h3>This is a web application developed to cater the students of NSBM Green University</h3>
 
+<h4>Languages Used:</h4>
+<ul>React</ul>
+

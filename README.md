@@ -1,3 +1,1 @@
-# Smart-Study-Room-Booking
-
-<h2>Smart Study room booking system</h2>
+<h1>Study Room Booking System</h1>

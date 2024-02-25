@@ -6,5 +6,6 @@
 <h4>Languages Used:</h4>
 <ul>
   <li>React</li>
+  <li>C++</li>
 </ul>
 

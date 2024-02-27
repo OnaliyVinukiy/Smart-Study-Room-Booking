@@ -42,10 +42,24 @@ const Booking = () => {
     setIsModalOpen(false);
   };
 
-  // Function to update booking data in Firebase
+  // Function to update booking data in Firebase and local state
+  const updateLeaveInFirebase = async (bookingId, newBookingData) => {
+    try {
+      const bookingsRef = firebase.database().ref('bookings').child(bookingId);
+      await bookingsRef.update(newBookingData); // Update booking data in Firebase
+      console.log("Booking updated successfully!");
+    } catch (error) {
+      console.error("Error updating booking:", error);
+    }
+  };
   // Function to update booking data in Firebase and local state
 const updateBookingInFirebase = async (newBookingData) => {
   try {
+    if (!selectedBooking) {
+      console.error("No booking selected.");
+      return;
+    }
+    
     const bookingsRef = firebase.database().ref('bookings').child(selectedBooking.id);
     await bookingsRef.update(newBookingData); // Update booking data in Firebase
 
@@ -79,6 +93,16 @@ const updateBookingInFirebase = async (newBookingData) => {
     };
     updateBookingInFirebase(newBookingData); // Call the function to update booking data in Firebase
   };
+
+  // Function to handle leaving a booking
+  const handleLeave = (booking) => {
+    const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }); // Get current time in hh:mm format
+    const newBookingData = {
+      outtime: currentTime
+    };
+    updateLeaveInFirebase(booking.id, newBookingData); // Call the function to update booking data in Firebase
+  };
+
 
   return (
     <div className="py-8 lg:m-16">
@@ -144,7 +168,8 @@ const updateBookingInFirebase = async (newBookingData) => {
                   </button>
                 </td>
                 <td className="px-6 py-4">
-                  <button 
+                <button 
+                    onClick={() => handleLeave(booking)} // Attach handleLeave function to the onClick event of the Leave button
                     className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${booking.date === currentDate ? '' : 'opacity-50 cursor-not-allowed'}`}
                     disabled={booking.date !== currentDate}
                   >

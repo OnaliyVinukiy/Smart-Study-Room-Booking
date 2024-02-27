@@ -6,6 +6,7 @@ import { useMsal } from "@azure/msal-react";
 const Booking = () => {
   const { accounts } = useMsal();
   const [userBookings, setUserBookings] = useState([]);
+  const currentDate = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
 
   useEffect(() => {
     const fetchUserBookings = async () => {
@@ -27,7 +28,6 @@ const Booking = () => {
 
     fetchUserBookings();
   }, [accounts]);
-
 
   return (
     <div className="py-8 lg:m-16">
@@ -74,16 +74,18 @@ const Booking = () => {
                   {booking.outtime}
                 </td>
                 <td className="px-6 py-4">
-                  <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4">Edit</button>
-                  
+                  <button 
+                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${booking.date === currentDate ? '' : 'opacity-50 cursor-not-allowed'}`}
+                    disabled={booking.date !== currentDate}
+                  >
+                    Edit
+                  </button>
                 </td>
                 <td className="px-6 py-4">
                   <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4">Cancel</button>
-                  
                 </td>
                 <td className="px-6 py-4">
                   <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4">Leave</button>
-                  
                 </td>
               </tr>
             ))}

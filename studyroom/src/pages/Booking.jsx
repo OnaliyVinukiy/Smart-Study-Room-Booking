@@ -19,7 +19,7 @@ const Booking = () => {
             id: key,
             ...bookings[key]
           }));
-          setUserBookings(userBookingsArray);
+          setUserBookings(userBookingsArray.reverse()); // Reverse the order of userBookingsArray
         }
       } catch (error) {
         console.error("Error fetching user bookings:", error);
@@ -82,10 +82,20 @@ const Booking = () => {
                   </button>
                 </td>
                 <td className="px-6 py-4">
-                  <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4">Cancel</button>
+                  <button 
+                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${booking.date === currentDate ? '' : 'opacity-50 cursor-not-allowed'}`}
+                    disabled={booking.date !== currentDate}
+                  >
+                    Cancel
+                  </button>
                 </td>
                 <td className="px-6 py-4">
-                  <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4">Leave</button>
+                  <button 
+                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${booking.date === currentDate ? '' : 'opacity-50 cursor-not-allowed'}`}
+                    disabled={booking.date !== currentDate}
+                  >
+                    Leave
+                  </button>
                 </td>
               </tr>
             ))}

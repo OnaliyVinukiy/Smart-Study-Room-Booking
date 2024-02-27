@@ -7,6 +7,7 @@ const Booking = () => {
   const { accounts } = useMsal();
   const [userBookings, setUserBookings] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [disabledLeaveButtons, setDisabledLeaveButtons] = useState({});
   const [selectedBooking, setSelectedBooking] = useState(null);
   const currentDate = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
 
@@ -43,15 +44,29 @@ const Booking = () => {
   };
 
   // Function to update booking data in Firebase and local state
-  const updateLeaveInFirebase = async (bookingId, newBookingData) => {
-    try {
-      const bookingsRef = firebase.database().ref('bookings').child(bookingId);
-      await bookingsRef.update(newBookingData); // Update booking data in Firebase
-      console.log("Booking updated successfully!");
-    } catch (error) {
-      console.error("Error updating booking:", error);
-    }
-  };
+const updateLeaveInFirebase = async (bookingId, newBookingData) => {
+  try {
+    const bookingsRef = firebase.database().ref('bookings').child(bookingId);
+    await bookingsRef.update(newBookingData); // Update booking data in Firebase
+
+    // Update local state of userBookings with the updated data
+    setUserBookings(prevUserBookings => {
+      return prevUserBookings.map(booking => {
+        if (booking.id === bookingId) {
+          return { ...booking, ...newBookingData };
+        } else {
+          return booking;
+        }
+      });
+    });
+
+    console.log("Booking updated successfully!");
+    setDisabledLeaveButtons(prevState => ({ ...prevState, [bookingId]: true })); // Disable the Leave button for the corresponding booking
+  } catch (error) {
+    console.error("Error updating booking:", error);
+  }
+};
+
   // Function to update booking data in Firebase and local state
 const updateBookingInFirebase = async (newBookingData) => {
   try {
@@ -98,7 +113,8 @@ const updateBookingInFirebase = async (newBookingData) => {
   const handleLeave = (booking) => {
     const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }); // Get current time in hh:mm format
     const newBookingData = {
-      outtime: currentTime
+      outtime: currentTime,
+      leaveButtonDisabled: true // Add leaveButtonDisabled flag to the booking data
     };
     updateLeaveInFirebase(booking.id, newBookingData); // Call the function to update booking data in Firebase
   };
@@ -170,8 +186,8 @@ const updateBookingInFirebase = async (newBookingData) => {
                 <td className="px-6 py-4">
                 <button 
                     onClick={() => handleLeave(booking)} // Attach handleLeave function to the onClick event of the Leave button
-                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${booking.date === currentDate ? '' : 'opacity-50 cursor-not-allowed'}`}
-                    disabled={booking.date !== currentDate}
+                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${booking.date === currentDate && !booking.leaveButtonDisabled ? '' : 'opacity-50 cursor-not-allowed'}`}
+                    disabled={booking.date !== currentDate || booking.leaveButtonDisabled}
                   >
                     Leave
                   </button>

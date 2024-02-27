@@ -44,29 +44,28 @@ const Booking = () => {
   };
 
   // Function to update booking data in Firebase and local state
-const updateLeaveInFirebase = async (bookingId, newBookingData) => {
-  try {
-    const bookingsRef = firebase.database().ref('bookings').child(bookingId);
-    await bookingsRef.update(newBookingData); // Update booking data in Firebase
-
-    // Update local state of userBookings with the updated data
-    setUserBookings(prevUserBookings => {
-      return prevUserBookings.map(booking => {
-        if (booking.id === bookingId) {
-          return { ...booking, ...newBookingData };
-        } else {
-          return booking;
-        }
+  const updateLeaveInFirebase = async (bookingId, newBookingData) => {
+    try {
+      const bookingsRef = firebase.database().ref('bookings').child(bookingId);
+      await bookingsRef.update(newBookingData); // Update booking data in Firebase
+  
+      // Update local state of userBookings with the updated data
+      setUserBookings(prevUserBookings => {
+        return prevUserBookings.map(booking => {
+          if (booking.id === bookingId) {
+            return { ...booking, ...newBookingData };
+          } else {
+            return booking;
+          }
+        });
       });
-    });
-
-    console.log("Booking updated successfully!");
-    setDisabledLeaveButtons(prevState => ({ ...prevState, [bookingId]: true })); // Disable the Leave button for the corresponding booking
-  } catch (error) {
-    console.error("Error updating booking:", error);
-  }
-};
-
+  
+      console.log("Booking updated successfully!");
+      setDisabledLeaveButtons(prevState => ({ ...prevState, [bookingId]: true })); // Disable the Leave button for the corresponding booking
+    } catch (error) {
+      console.error("Error updating booking:", error);
+    }
+  };
   // Function to update booking data in Firebase and local state
 const updateBookingInFirebase = async (newBookingData) => {
   try {
@@ -169,16 +168,16 @@ const updateBookingInFirebase = async (newBookingData) => {
                 <td className="px-6 py-4">
                   <button 
                     onClick={() => openModal(booking)}
-                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${booking.date === currentDate ? '' : 'opacity-50 cursor-not-allowed'}`}
-                    disabled={booking.date !== currentDate}
+                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${booking.date === currentDate && !booking.leaveButtonDisabled ? '' : 'opacity-50 cursor-not-allowed'}`}
+                    disabled={booking.date !== currentDate || booking.leaveButtonDisabled}
                   >
                     Edit
                   </button>
                 </td>
                 <td className="px-6 py-4">
                   <button 
-                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${booking.date === currentDate ? '' : 'opacity-50 cursor-not-allowed'}`}
-                    disabled={booking.date !== currentDate}
+                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${booking.date === currentDate && !booking.leaveButtonDisabled ? '' : 'opacity-50 cursor-not-allowed'}`}
+                    disabled={booking.date !== currentDate|| booking.leaveButtonDisabled}
                   >
                     Cancel
                   </button>

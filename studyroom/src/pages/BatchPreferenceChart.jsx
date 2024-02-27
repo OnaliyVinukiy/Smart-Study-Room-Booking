@@ -64,8 +64,18 @@ export default function StudyRoomBookingTrend() {
 
   return (
     <div>
-      <h2>Study Room Booking Trend</h2>
-      <div style={{ height: '400px', width: '600px' }}>
+       <section
+        className="bg-center bg-no-repeat bg-gray-700 npm st bg-blend-multiply mt-0"
+        style={{
+          backgroundImage: `url("https://raw.githubusercontent.com/OnaliyVinukiy/Smart-Study-Room-Booking/main/studyroom/src/pages/about/uni.jpg")`,
+        }}
+      >
+        <div className="px-4 mx-auto max-w-screen-xl md:h-[15rem] sm:h-[15rem] text-center py-12 lg:py-20">
+          <h3 className="mt-2 text-3xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl">Dashboard</h3>
+        </div>
+      </section>
+     
+      <div style={{ height: '400px', width: '600px' }} class="mt-12">
         {/* Use ref to reference the canvas element */}
         <canvas ref={chartRef}></canvas>
       </div>

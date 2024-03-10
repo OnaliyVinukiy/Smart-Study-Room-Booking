@@ -25,7 +25,6 @@ export default function StudyRoomBookingTrend() {
     return days[date.getDay()];
   };
 
-<<<<<<< HEAD
   const getPeakTimeForDay = (day) => {
     const bookingsOnDay = bookingData.filter(booking => getDayOfWeek(booking.date) === day);
     const bookingCountsByTime = bookingsOnDay.reduce((counts, booking) => {
@@ -38,8 +37,6 @@ export default function StudyRoomBookingTrend() {
     return peakTimes.map(time => `${time}:00-${parseInt(time) + 1}:00`).join(", ");
   };
   
-=======
->>>>>>> 7db903df5205b86878d025abf71ce2f2baf558c0
   useEffect(() => {
     const fetchData = async () => {
       const bookingsRef = firebase.database().ref("bookings");

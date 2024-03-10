@@ -16,6 +16,18 @@ export default function StudyRoomBookingTrend() {
     const date = new Date(dateString);
     return days[date.getDay()];
   };
+
+  const getPeakTimeForDay = (day) => {
+    const bookingsOnDay = bookingData.filter(booking => getDayOfWeek(booking.date) === day);
+    const bookingCountsByTime = bookingsOnDay.reduce((counts, booking) => {
+      const hour = parseInt(booking.intime.split(':')[0]); // Extract hours and convert to number
+      counts[hour] = (counts[hour] || 0) + 1;
+      return counts;
+    }, {});
+    const maxBookingsTime = Math.max(...Object.values(bookingCountsByTime));
+    const peakTimes = Object.keys(bookingCountsByTime).filter(time => bookingCountsByTime[time] === maxBookingsTime);
+    return peakTimes.map(time => `${time}:00-${parseInt(time) + 1}:00`).join(", ");
+  };
   
   useEffect(() => {
     const fetchData = async () => {
@@ -106,6 +118,8 @@ export default function StudyRoomBookingTrend() {
     }
   }, [bookingData]);
 
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
   return (
     <div>
        <section
@@ -127,8 +141,6 @@ export default function StudyRoomBookingTrend() {
          </div>
       </div>
 
-
-
       <section className="mb-10">
         <h2 className="text-3xl font-semibold mb-4 text-center mt-16">Peak Usage Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -147,6 +159,19 @@ export default function StudyRoomBookingTrend() {
             <p class="text-l font-semibold">{mostActiveStudent || "No data"}</p>
             <p class="mt-2">This student may get higher marks</p>
           </div>
+        </div>
+      </section>
+
+      <section className="mb-10">
+        <h2 className="text-3xl font-semibold mb-4 text-center mt-16">Peak Time for Each Day of the Week</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {daysOfWeek.map(day => (
+            <div key={day} className="bg-yellow-300 p-6 rounded-lg">
+              <h3 className="text-xl font-semibold mb-2">Peak Time for {day}</h3>
+              <p>{getPeakTimeForDay(day)}</p>
+              <p className="mt-2">Allocate More Study Rooms during this time period</p>
+            </div>
+          ))}
         </div>
       </section>
     </div>

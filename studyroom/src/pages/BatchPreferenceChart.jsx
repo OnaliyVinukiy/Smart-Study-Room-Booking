@@ -231,7 +231,7 @@ export default function StudyRoomBookingTrend() {
           <canvas ref={chartRef}></canvas>
         </div>
       </div>
-      <section className="mb-10 ml-10 mr-10">
+      <section className="mb-10 ml-10 mr-10 w-full">
         <h2 className="mt-10 mb-4 text-3xl font-semibold text-center">
           Peak Usage Time Periods
         </h2>
@@ -242,7 +242,7 @@ export default function StudyRoomBookingTrend() {
         </div>
       </section>
 
-      <section className="mb-10 ml-10 mr-10">
+      <section className="mb-10 ml-10 mr-10 w-full">
         <h2 className="text-3xl font-semibold mb-4 text-center mt-16">Most Active Students</h2>
         <div className="flex justify-center mt-12">
           <div style={{ height: "400px", width: "800px" }}>
@@ -250,29 +250,31 @@ export default function StudyRoomBookingTrend() {
           </div>
         </div>
       </section>
-      <section className="mb-10 mt-10 justify-center items-center text-center">
+
+      <section className="mb-10 mt-10 justify-center items-center text-center pl-5 pr-5">
         <h2 className="mt-16 mb-6 text-3xl font-semibold text-center text-green-700">
           Peak Usage Information
         </h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="p-6 ml-12 bg-purple-300 rounded-lg">
-            <h3 className="mb-2 text-xl font-semibold ">Peak Usage Day</h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 justify-center">
+          <div className="p-6 bg-purple-300 rounded-lg flex flex-col items-center">
+            <h3 className="mb-2 text-xl font-semibold">Peak Usage Day</h3>
+            <hr className="mb-2 border border-black w-full"></hr>
             <p className="text-l font-semibold text-blue-800">
               {peakDays.length > 0 ? peakDays.join(", ") : "No data"}
             </p>
-            <p className="mt-2 ">Allocate More Study Rooms on this Day</p>
+            <p className="mt-2">Allocate More Study Rooms on this Day</p>
           </div>
-          <div className="p-6 bg-blue-300 rounded-lg">
+          <div className="p-6 bg-blue-300 rounded-lg flex flex-col items-center">
             <h3 className="mb-2 text-xl font-semibold">
               Peak Usage Time Period
             </h3>
+            <hr className="mb-2 border border-black w-full"></hr>
             <p className="text-l font-semibold text-blue-800">{peakTimePeriod || "No data"}</p>
-            <p className="mt-2">
-              Allocate More Study Rooms during this Time Period
-            </p>
+            <p className="mt-2">Allocate More Study Rooms during this Time Period</p>
           </div>
-          <div className="p-6 mr-12 bg-green-300 rounded-lg">
+          <div className="p-6 bg-green-300 rounded-lg flex flex-col items-center">
             <h3 className="mb-2 text-xl font-semibold">Most Active Student</h3>
+            <hr className="mb-2 border border-black w-full"></hr>
             <p className="text-l font-semibold text-blue-800">{mostActiveStudent || "No data"}</p>
             <p className="mt-2">This student may get higher marks</p>
           </div>
@@ -280,13 +282,17 @@ export default function StudyRoomBookingTrend() {
       </section>
 
 
+
       <section className="mb-10 ml-10 mr-10 text-center">
         <h2 className="text-3xl font-semibold mb-4 text-center mt-16 mb-7 text-green-700">Peak Time for Each Day of the Week</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {daysOfWeek.map(day => (
-            <div key={day} className="bg-yellow-200 p-6 rounded-lg">
+            <div key={day} className="bg-yellow-100 p-6 rounded-lg">
               <h3 className="text-xl font-semibold mb-2">Peak Time for {day}</h3>
-              <p>{getPeakTimeForDay(day)}</p>
+
+              <hr className="mb-2 border border-black"></hr>
+
+              <p className="text-blue-800">{getPeakTimeForDay(day)}</p>
               <p className="mt-2">Allocate More Study Rooms during this time period</p>
             </div>
           ))}

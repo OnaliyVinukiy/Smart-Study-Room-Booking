@@ -13,6 +13,7 @@ export default function StudyRoomBookingTrend() {
   const chartRef = useRef(); // Reference to the bookings chart instance
   const peakTimeChartRef = useRef(); // Reference to the peak time periods chart instance
   const mostActiveStudentsChartRef = useRef(); // Reference to the most active students chart instance
+  const peakDaysChartRef = useRef(); // Reference to the peak days chart instance
 
   const getDayOfWeek = (dateString) => {
     const days = [
@@ -29,15 +30,21 @@ export default function StudyRoomBookingTrend() {
   };
 
   const getPeakTimeForDay = (day) => {
-    const bookingsOnDay = bookingData.filter(booking => getDayOfWeek(booking.date) === day);
+    const bookingsOnDay = bookingData.filter(
+      (booking) => getDayOfWeek(booking.date) === day
+    );
     const bookingCountsByTime = bookingsOnDay.reduce((counts, booking) => {
-      const hour = parseInt(booking.intime.split(':')[0]); // Extract hours and convert to number
+      const hour = parseInt(booking.intime.split(":")[0]); // Extract hours and convert to number
       counts[hour] = (counts[hour] || 0) + 1;
       return counts;
     }, {});
     const maxBookingsTime = Math.max(...Object.values(bookingCountsByTime));
-    const peakTimes = Object.keys(bookingCountsByTime).filter(time => bookingCountsByTime[time] === maxBookingsTime);
-    return peakTimes.map(time => `${time}:00-${parseInt(time) + 1}:00`).join(", ");
+    const peakTimes = Object.keys(bookingCountsByTime).filter(
+      (time) => bookingCountsByTime[time] === maxBookingsTime
+    );
+    return peakTimes.map(
+      (time) => `${time}:00-${parseInt(time) + 1}:00`
+    ).join(", ");
   };
 
   useEffect(() => {
@@ -61,14 +68,14 @@ export default function StudyRoomBookingTrend() {
     if (bookingData.length > 0) {
       // Calculate peak usage days
       const bookingCountsByDay = bookingData.reduce((counts, booking) => {
-        const date = new Date(booking.date).toLocaleDateString();
-        counts[date] = (counts[date] || 0) + 1;
+        const dayOfWeek = getDayOfWeek(booking.date);
+        counts[dayOfWeek] = (counts[dayOfWeek] || 0) + 1;
         return counts;
       }, {});
       const maxBookings = Math.max(...Object.values(bookingCountsByDay));
-      const peakDays = Object.keys(bookingCountsByDay)
-        .filter((day) => bookingCountsByDay[day] === maxBookings)
-        .map((day) => getDayOfWeek(day));
+      const peakDays = Object.keys(bookingCountsByDay).filter(
+        (day) => bookingCountsByDay[day] === maxBookings
+      );
       setPeakDays(peakDays);
 
       // Calculate peak usage time period
@@ -206,6 +213,50 @@ export default function StudyRoomBookingTrend() {
     }
   }, [mostActiveStudentsData]);
 
+  useEffect(() => {
+    if (peakDaysChartRef.current && bookingData.length > 0) {
+      const bookingCountsByDay = bookingData.reduce((counts, booking) => {
+        const dayOfWeek = getDayOfWeek(booking.date);
+        counts[dayOfWeek] = (counts[dayOfWeek] || 0) + 1;
+        return counts;
+      }, {});
+
+      const peakDayLabels = Object.keys(bookingCountsByDay);
+      const peakDayData = Object.values(bookingCountsByDay);
+
+      const peakDaysChartData = {
+        labels: peakDayLabels,
+        datasets: [
+          {
+            label: "Peak Usage Days",
+            data: peakDayData,
+            backgroundColor: "rgba(128, 0, 127, 0.5)", // Purple background color
+            borderColor: "rgba(128, 0, 127, 1)",
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      // Destroy the previous chart instance if it exists
+      if (peakDaysChartRef.current.chartInstance) {
+        peakDaysChartRef.current.chartInstance.destroy();
+      }
+
+      // Create a new chart instance
+      peakDaysChartRef.current.chartInstance = new Chart(peakDaysChartRef.current, {
+        type: "bar",
+        data: peakDaysChartData,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    }
+  }, [bookingData]);
+
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   return (
@@ -251,6 +302,17 @@ export default function StudyRoomBookingTrend() {
         </div>
       </section>
 
+      <section className="mb-10 ml-10 mr-10 w-full">
+        <h2 className="mt-10 mb-4 text-3xl font-semibold text-center">
+          Peak Usage Days
+        </h2>
+        <div className="flex justify-center mt-12">
+          <div style={{ height: "400px", width: "800px" }}>
+            <canvas ref={peakDaysChartRef}></canvas>
+          </div>
+        </div>
+      </section>
+
       <section className="mb-10 mt-10 justify-center items-center text-center pl-5 pr-5">
         <h2 className="mt-16 mb-6 text-3xl font-semibold text-center text-green-700">
           Peak Usage Information
@@ -280,8 +342,6 @@ export default function StudyRoomBookingTrend() {
           </div>
         </div>
       </section>
-
-
 
       <section className="mb-10 ml-10 mr-10 text-center">
         <h2 className="text-3xl font-semibold mb-4 text-center mt-16 mb-7 text-green-700">Peak Time for Each Day of the Week</h2>

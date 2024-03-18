@@ -9,7 +9,8 @@ export default function StudyRoomBookingTrend() {
   const [peakDays, setPeakDays] = useState([]);
   const [peakTimePeriod, setPeakTimePeriod] = useState("");
   const [mostActiveStudent, setMostActiveStudent] = useState("");
-  const chartRef = useRef(); // Reference to the chart instance
+  const chartRef = useRef(); // Reference to the bookings chart instance
+  const peakTimeChartRef = useRef(); // Reference to the peak time periods chart instance
 
   const getDayOfWeek = (dateString) => {
     const days = [
@@ -36,7 +37,7 @@ export default function StudyRoomBookingTrend() {
     const peakTimes = Object.keys(bookingCountsByTime).filter(time => bookingCountsByTime[time] === maxBookingsTime);
     return peakTimes.map(time => `${time}:00-${parseInt(time) + 1}:00`).join(", ");
   };
-  
+
   useEffect(() => {
     const fetchData = async () => {
       const bookingsRef = firebase.database().ref("bookings");
@@ -132,6 +133,40 @@ export default function StudyRoomBookingTrend() {
     }
   }, [bookingData]);
 
+  useEffect(() => {
+    if (peakTimeChartRef.current && bookingData.length > 0) {
+      const peakTimeCountsByHour = Array(24).fill(0);
+      bookingData.forEach(booking => {
+        const hour = parseInt(booking.intime.split(":")[0]);
+        peakTimeCountsByHour[hour]++;
+      });
+
+      const data = {
+        labels: Array.from({ length: 24 }, (_, i) => `${i}:00-${i + 1}:00`),
+        datasets: [
+          {
+            label: "Peak Usage Time Period",
+            data: peakTimeCountsByHour,
+            fill: false,
+            borderColor: "rgba(54, 162, 235, 1)",
+            tension: 0.1,
+          },
+        ],
+      };
+
+      // Destroy the previous chart instance if it exists
+      if (peakTimeChartRef.current.chartInstance) {
+        peakTimeChartRef.current.chartInstance.destroy();
+      }
+
+      // Create a new chart instance
+      peakTimeChartRef.current.chartInstance = new Chart(peakTimeChartRef.current, {
+        type: "line",
+        data: data,
+      });
+    }
+  }, [bookingData]);
+
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   return (
@@ -158,7 +193,16 @@ export default function StudyRoomBookingTrend() {
         </div>
       </div>
 
-      <section className="mb-10">
+      <h2 className="mt-10 mb-4 text-3xl font-semibold text-center">
+        Peak Usage Time Periods
+      </h2>
+      <div className="flex justify-center mt-12">
+        <div style={{ height: "400px", width: "800px" }}>
+          <canvas ref={peakTimeChartRef}></canvas>
+        </div>
+      </div>
+
+      <section className="mb-10 mt-10 justify-center items-center">
         <h2 className="mt-16 mb-4 text-3xl font-semibold text-center">
           Peak Usage Information
         </h2>
@@ -187,11 +231,11 @@ export default function StudyRoomBookingTrend() {
         </div>
       </section>
 
-      <section className="mb-10">
+      <section className="mb-10 ml-10 mr-10">
         <h2 className="text-3xl font-semibold mb-4 text-center mt-16">Peak Time for Each Day of the Week</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {daysOfWeek.map(day => (
-            <div key={day} className="bg-yellow-300 p-6 rounded-lg">
+            <div key={day} className="bg-yellow-200 p-6 rounded-lg">
               <h3 className="text-xl font-semibold mb-2">Peak Time for {day}</h3>
               <p>{getPeakTimeForDay(day)}</p>
               <p className="mt-2">Allocate More Study Rooms during this time period</p>
@@ -199,6 +243,8 @@ export default function StudyRoomBookingTrend() {
           ))}
         </div>
       </section>
+
+
     </div>
   );
 }

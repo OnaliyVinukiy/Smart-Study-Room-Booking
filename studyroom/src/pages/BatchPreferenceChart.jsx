@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
-import { Line } from "react-chartjs-2";
+import { Line, Bar } from "react-chartjs-2";
 import Chart from "chart.js/auto"; // Import Chart.js
 
 export default function StudyRoomBookingTrend() {
@@ -9,8 +9,10 @@ export default function StudyRoomBookingTrend() {
   const [peakDays, setPeakDays] = useState([]);
   const [peakTimePeriod, setPeakTimePeriod] = useState("");
   const [mostActiveStudent, setMostActiveStudent] = useState("");
+  const [mostActiveStudentsData, setMostActiveStudentsData] = useState({});
   const chartRef = useRef(); // Reference to the bookings chart instance
   const peakTimeChartRef = useRef(); // Reference to the peak time periods chart instance
+  const mostActiveStudentsChartRef = useRef(); // Reference to the most active students chart instance
 
   const getDayOfWeek = (dateString) => {
     const days = [
@@ -93,6 +95,21 @@ export default function StudyRoomBookingTrend() {
         studentBookings[a] > studentBookings[b] ? a : b
       );
       setMostActiveStudent(mostActiveStudentId);
+
+      // Prepare data for most active students chart
+      const mostActiveStudentsChartData = {
+        labels: Object.keys(studentBookings),
+        datasets: [
+          {
+            label: "Number of Bookings",
+            data: Object.values(studentBookings),
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            borderColor: "rgba(255, 99, 132, 1)",
+            borderWidth: 1,
+          },
+        ],
+      };
+      setMostActiveStudentsData(mostActiveStudentsChartData);
     }
   }, [bookingData]);
 
@@ -167,6 +184,28 @@ export default function StudyRoomBookingTrend() {
     }
   }, [bookingData]);
 
+  useEffect(() => {
+    if (mostActiveStudentsChartRef.current && Object.keys(mostActiveStudentsData).length > 0) {
+      // Destroy the previous chart instance if it exists
+      if (mostActiveStudentsChartRef.current.chartInstance) {
+        mostActiveStudentsChartRef.current.chartInstance.destroy();
+      }
+
+      // Create a new chart instance
+      mostActiveStudentsChartRef.current.chartInstance = new Chart(mostActiveStudentsChartRef.current, {
+        type: "bar",
+        data: mostActiveStudentsData,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    }
+  }, [mostActiveStudentsData]);
+
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   return (
@@ -192,15 +231,25 @@ export default function StudyRoomBookingTrend() {
           <canvas ref={chartRef}></canvas>
         </div>
       </div>
-
-      <h2 className="mt-10 mb-4 text-3xl font-semibold text-center">
-        Peak Usage Time Periods
-      </h2>
-      <div className="flex justify-center mt-12">
-        <div style={{ height: "400px", width: "800px" }}>
-          <canvas ref={peakTimeChartRef}></canvas>
+      <section className="mb-10 ml-10 mr-10">
+        <h2 className="mt-10 mb-4 text-3xl font-semibold text-center">
+          Peak Usage Time Periods
+        </h2>
+        <div className="flex justify-center mt-12">
+          <div style={{ height: "400px", width: "800px" }}>
+            <canvas ref={peakTimeChartRef}></canvas>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section className="mb-10 ml-10 mr-10">
+        <h2 className="text-3xl font-semibold mb-4 text-center mt-16">Most Active Students</h2>
+        <div className="flex justify-center mt-12">
+          <div style={{ height: "400px", width: "800px" }}>
+            <canvas ref={mostActiveStudentsChartRef}></canvas>
+          </div>
+        </div>
+      </section>
 
       <section className="mb-10 mt-10 justify-center items-center">
         <h2 className="mt-16 mb-4 text-3xl font-semibold text-center">

@@ -274,44 +274,43 @@ export default function StudyRoomBookingTrend() {
         </div>
       </section>
 
-      <h2 className="mt-8 mb-4 text-3xl font-semibold text-center">
-        Booking Information
-      </h2>
-      <div className="flex justify-center mt-12">
-        <div style={{ height: "400px", width: "800px" }}>
-          <canvas ref={chartRef}></canvas>
-        </div>
+      <div className="flex flex-col items-center p-5">
+        <section className="w-full max-w-screen-lg mb-10">
+          <h2 className="mt-8 mb-4 text-3xl font-semibold text-center">Booking Information</h2>
+          <div className="flex justify-center">
+            <div className="w-full lg:w-3/4">
+              <canvas ref={chartRef}></canvas>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full max-w-screen-lg mb-10">
+          <h2 className="mt-10 mb-4 text-3xl font-semibold text-center">Peak Usage Time Periods</h2>
+          <div className="flex justify-center">
+            <div className="w-full lg:w-3/4">
+              <canvas ref={peakTimeChartRef}></canvas>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full max-w-screen-lg mb-10">
+          <h2 className="mt-10 mb-4 text-3xl font-semibold text-center">Most Active Students</h2>
+          <div className="flex justify-center">
+            <div className="w-full lg:w-3/4">
+              <canvas ref={mostActiveStudentsChartRef}></canvas>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full max-w-screen-lg mb-10">
+          <h2 className="mt-10 mb-4 text-3xl font-semibold text-center">Peak Usage Days</h2>
+          <div className="flex justify-center">
+            <div className="w-full lg:w-3/4">
+              <canvas ref={peakDaysChartRef}></canvas>
+            </div>
+          </div>
+        </section>
       </div>
-      <section className="mb-10 ml-10 mr-10 w-full">
-        <h2 className="mt-10 mb-4 text-3xl font-semibold text-center">
-          Peak Usage Time Periods
-        </h2>
-        <div className="flex justify-center mt-12">
-          <div style={{ height: "400px", width: "800px" }}>
-            <canvas ref={peakTimeChartRef}></canvas>
-          </div>
-        </div>
-      </section>
-
-      <section className="mb-10 ml-10 mr-10 w-full">
-        <h2 className="text-3xl font-semibold mb-4 text-center mt-16">Most Active Students</h2>
-        <div className="flex justify-center mt-12">
-          <div style={{ height: "400px", width: "800px" }}>
-            <canvas ref={mostActiveStudentsChartRef}></canvas>
-          </div>
-        </div>
-      </section>
-
-      <section className="mb-10 ml-10 mr-10 w-full">
-        <h2 className="mt-10 mb-4 text-3xl font-semibold text-center">
-          Peak Usage Days
-        </h2>
-        <div className="flex justify-center mt-12">
-          <div style={{ height: "400px", width: "800px" }}>
-            <canvas ref={peakDaysChartRef}></canvas>
-          </div>
-        </div>
-      </section>
 
       <section className="mb-10 mt-10 justify-center items-center text-center pl-5 pr-5">
         <h2 className="mt-16 mb-6 text-3xl font-semibold text-center text-green-700">

@@ -26,7 +26,7 @@ function Header() {
           <path fill-rule="evenodd" d="M11 4.7C8.7 4.1 6.8 4 4 4a2 2 0 0 0-2 2v11c0 1.1 1 2 2 2 2.8 0 4.5.2 7 .8v-15Zm2 15.1c2.5-.6 4.2-.8 7-.8a2 2 0 0 0 2-2V6c0-1-.9-2-2-2-2.8 0-4.7.1-7 .7v15.1Z" clip-rule="evenodd"/>
         </svg>
   
-            <span class="self-center text-2xl font-semibold text-blue-800 whitespace-nowrap dark:text-white">SmartStudy</span>
+            <span class="self-center text-2xl font-semibold text-blue-800 whitespace-nowrap dark:text-white">NStudy</span>
         </a>
         <button data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
             <span class="sr-only">Open main menu</span>

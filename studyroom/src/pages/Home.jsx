@@ -16,6 +16,7 @@ const Home = () => {
   const [batch, setBatch] = useState("");
   const [intime, setInTime] = useState("");
   const [outtime, setOutTime] = useState("");
+  const [purpose, setPurpose] = useState("");
   const [isAvailable, setIsAvailable] = useState(true);
   const [conflictingBooking, setConflictingBooking] = useState(null);
   const [today] = useState(new Date().toISOString().split('T')[0]);
@@ -67,6 +68,7 @@ const Home = () => {
         batch,
         intime,
         outtime,
+        purpose,
         date: today, // Include today's date in the booking
       })
       .then(() => {
@@ -77,6 +79,7 @@ const Home = () => {
         setBatch("");
         setInTime("");
         setOutTime("");
+        setPurpose("");
       })
       .catch((error) => {
         console.error("Error adding booking: ", error);
@@ -183,6 +186,19 @@ const Home = () => {
               onChange={(e) => setOutTime(e.target.value)}
             />
           </div>
+          <div>
+            <label htmlFor="purpose" className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
+            <textarea
+              id="purpose"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500"
+              style={{ width: '100%', height: '100px', fontSize: '1rem', maxWidth: '100%' }}
+              placeholder="Enter your purpose of booking the study room"
+              required
+              value={purpose}
+              onChange={(e) => setPurpose(e.target.value)}
+            />
+          </div>
+
           <button
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-lg transition duration-300"

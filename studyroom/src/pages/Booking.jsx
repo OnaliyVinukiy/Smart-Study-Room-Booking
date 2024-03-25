@@ -164,6 +164,12 @@ const Booking = () => {
                 Out Time
               </th>
               <th scope="col" className="px-6 py-3">
+                Access Granted
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Actions
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Actions
               </th>
               <th scope="col" className="px-6 py-3">
@@ -187,6 +193,7 @@ const Booking = () => {
                 <td className="px-6 py-4">{booking.date}</td>
                 <td className="px-6 py-4">{booking.intime}</td>
                 <td className="px-6 py-4">{booking.outtime}</td>
+                <td className="px-6 py-4">Yes/No</td>
                 <td className="px-6 py-4">
                   <button
                     onClick={() => openModal(booking)}
@@ -241,6 +248,25 @@ const Booking = () => {
                     }
                   >
                     Leave
+                  </button>
+                </td>
+                <td className="px-6 py-4">
+                  <button
+                    onClick={() => handleLeave(booking)}
+                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${
+                      booking.date !== currentDate ||
+                      booking.leaveButtonDisabled ||
+                      outTimeExceeded[booking.id]
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
+                    disabled={
+                      booking.date !== currentDate ||
+                      booking.leaveButtonDisabled ||
+                      outTimeExceeded[booking.id]
+                    }
+                  >
+                    Panel
                   </button>
                 </td>
               </tr>

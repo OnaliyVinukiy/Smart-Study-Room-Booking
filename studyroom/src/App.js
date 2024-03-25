@@ -9,7 +9,7 @@ import Header from "./components/Header";
 import About from "./pages/About" ;
 import Contact from "./pages/Contact" ;
 import BatchPreferenceChart from "./pages/BatchPreferenceChart";
-
+import Panel from "./pages/Panel";
 
 const msalConfig = {
   auth: {
@@ -32,6 +32,7 @@ function App() {
           <Route path="/Booking" element={<Booking />} />
           <Route path="/About" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
+          <Route path="/Panel" element={<Panel />} />
         </Routes>
         <Footer />
       </BrowserRouter>

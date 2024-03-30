@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
 import { useMsal } from "@azure/msal-react";
-
+import { LockClosedIcon, LockOpenIcon, LightBulbIcon } from '@heroicons/react/solid';
 const Booking = () => {
   const { accounts } = useMsal();
   const [userBookings, setUserBookings] = useState([]);
@@ -10,6 +10,8 @@ const Booking = () => {
   const [disabledLeaveButtons, setDisabledLeaveButtons] = useState({});
   const [selectedBooking, setSelectedBooking] = useState(null);
   const currentDate = new Date().toISOString().slice(0, 10);
+  const [locked, setLocked] = useState(false);
+  const [displayText, setDisplayText] = useState('');
   const [outTimeExceeded, setOutTimeExceeded] = useState({});
 
   useEffect(() => {
@@ -140,7 +142,7 @@ const Booking = () => {
     };
     updateBookingInFirebase(newBookingData);
   };
-
+  
   const handleLeave = (booking) => {
     const currentTime = new Date().toLocaleTimeString("en-US", {
       hour12: false,
@@ -153,6 +155,27 @@ const Booking = () => {
     };
     updateLeaveInFirebase(booking.id, newBookingData);
   };
+  const handleLockClick = async () => {
+    try {
+      const newDoorValue = locked ? 'Locked' : 'Unlocked';
+      const bookingsRef = firebase.database().ref("bookings");
+      const snapshot = await bookingsRef
+        .orderByChild("email")
+        .equalTo(accounts[0].username)
+        .limitToLast(1)
+        .once("value");
+      const latestBooking = snapshot.val();
+      if (latestBooking) {
+        const latestBookingId = Object.keys(latestBooking)[0];
+        await bookingsRef.child(latestBookingId).update({ Door: newDoorValue });
+        setLocked(!locked);
+        setDisplayText(locked ? 'Study room is Locked!' : 'Study room is Unlocked!');
+      }
+    } catch (error) {
+      console.error("Error updating door status:", error);
+    }
+  };
+  
 
   return (
     <div className="py-8 lg:m-16">
@@ -173,6 +196,9 @@ const Booking = () => {
                 Out Time
               </th>
               <th scope="col" className="px-6 py-3">
+               Purpose
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Access Granted
               </th>
               <th scope="col" className="px-6 py-3">
@@ -185,8 +211,9 @@ const Booking = () => {
                 Actions
               </th>
               <th scope="col" className="px-6 py-3">
-                Actions
+                Door
               </th>
+
             </tr>
           </thead>
           <tbody>
@@ -201,6 +228,7 @@ const Booking = () => {
                 <td className="px-6 py-4">{booking.date}</td>
                 <td className="px-6 py-4">{booking.intime}</td>
                 <td className="px-6 py-4">{booking.outtime}</td>
+                <td className="px-6 py-4">{booking.purpose}</td>
                 <td className="px-6 py-4">{booking.accessGranted}</td>
                 <td className="px-6 py-4">
                   <button
@@ -259,24 +287,25 @@ const Booking = () => {
                   </button>
                 </td>
                 <td className="px-6 py-4">
-                  <button
-                    onClick={() => handleLeave(booking)}
-                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${
-                      booking.date !== currentDate ||
-                      booking.leaveButtonDisabled ||
-                      outTimeExceeded[booking.id]
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                    disabled={
-                      booking.date !== currentDate ||
-                      booking.leaveButtonDisabled ||
-                      outTimeExceeded[booking.id]
-                    }
-                  >
-                    Panel
-                  </button>
+                  {booking.accessGranted === 'Yes' && !(booking.date !== currentDate || booking.leaveButtonDisabled || outTimeExceeded[booking.id]) && (
+                    <button
+                      type="button"
+                      className={`text-white flex items-center justify-center ${
+                        locked ? 'bg-red-700 hover:bg-red-800' : 'bg-green-700 hover:bg-green-800'
+                      } focus:outline-none focus:ring-4 focus:ring-${locked ? 'red' : 'green'}-300 font-medium rounded-full text-xs px-2 py-2 me-1 mb-1 dark:bg-${
+                        locked ? 'red' : 'green'
+                      }-600 dark:hover:bg-${locked ? 'red' : 'green'}-700 dark:focus:ring-${locked ? 'red' : 'green'}-800`}
+                      onClick={handleLockClick}
+                    >
+                      {locked ? <LockClosedIcon className="w-3 h-3 mr-1" /> : <LockOpenIcon className="w-3 h-3 mr-1" />}
+                      {locked ? 'Lock' : 'Unlock'}
+                    </button>
+                  )}
                 </td>
+
+
+
+
               </tr>
             ))}
           </tbody>

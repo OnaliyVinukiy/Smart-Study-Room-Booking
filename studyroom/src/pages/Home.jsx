@@ -59,7 +59,7 @@ const Home = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
+  
     if (isAvailable) {
       firebase.database().ref("bookings").push({
         email,
@@ -70,6 +70,7 @@ const Home = () => {
         outtime,
         purpose,
         date: today, // Include today's date in the booking
+        "Access-Granted": "No" // Add Access-Granted field with default value
       })
       .then(() => {
         console.log("Booking confirmed!");
@@ -86,6 +87,7 @@ const Home = () => {
       });
     }
   };
+  
 
   return (
     <div style={{ backgroundImage: `url("https://www.nsbm.ac.lk/wp-content/uploads/2021/08/About-Tab-1.jpg")`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} className="min-h-screen flex flex-col justify-center py-8 bg-gray-700">

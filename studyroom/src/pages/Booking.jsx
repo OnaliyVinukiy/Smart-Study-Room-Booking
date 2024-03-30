@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import firebase from "firebase/compat/app"; // Import firebase from 'firebase/compat/app'
+import firebase from "firebase/compat/app";
 import "firebase/compat/database";
 import { useMsal } from "@azure/msal-react";
 
@@ -9,7 +9,7 @@ const Booking = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [disabledLeaveButtons, setDisabledLeaveButtons] = useState({});
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const currentDate = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
+  const currentDate = new Date().toISOString().slice(0, 10);
   const [outTimeExceeded, setOutTimeExceeded] = useState({});
 
   useEffect(() => {
@@ -27,7 +27,6 @@ const Booking = () => {
             ...bookings[key],
           }));
 
-          // Determine if out time has been exceeded for each booking
           const currentTime = new Date();
           const exceededBookings = userBookingsArray.reduce(
             (exceeded, booking) => {
@@ -38,8 +37,26 @@ const Booking = () => {
             {}
           );
 
-          setUserBookings(userBookingsArray.reverse()); // Reverse the order of userBookingsArray
-          setOutTimeExceeded(exceededBookings); // Update outTimeExceeded state
+          setUserBookings(userBookingsArray.reverse());
+          setOutTimeExceeded(exceededBookings);
+
+          // Fetch Access-Granted data for each booking
+          userBookingsArray.forEach((booking) => {
+            const accessGrantedRef = firebase
+              .database()
+              .ref(`bookings/${booking.id}/Access-Granted`);
+            accessGrantedRef.on("value", (snapshot) => {
+              const accessGranted = snapshot.val();
+              // Update the booking with Access-Granted data
+              setUserBookings((prevUserBookings) =>
+                prevUserBookings.map((prevBooking) =>
+                  prevBooking.id === booking.id
+                    ? { ...prevBooking, accessGranted }
+                    : prevBooking
+                )
+              );
+            });
+          });
         }
       } catch (error) {
         console.error("Error fetching user bookings:", error);
@@ -49,24 +66,20 @@ const Booking = () => {
     fetchUserBookings();
   }, [accounts]);
 
-  // Function to handle opening the modal and setting the selected booking
   const openModal = (booking) => {
     setSelectedBooking(booking);
     setIsModalOpen(true);
   };
 
-  // Function to handle closing the modal
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
-  // Function to update booking data in Firebase and local state
   const updateLeaveInFirebase = async (bookingId, newBookingData) => {
     try {
       const bookingsRef = firebase.database().ref("bookings").child(bookingId);
-      await bookingsRef.update(newBookingData); // Update booking data in Firebase
+      await bookingsRef.update(newBookingData);
 
-      // Update local state of userBookings with the updated data
       setUserBookings((prevUserBookings) => {
         return prevUserBookings.map((booking) => {
           if (booking.id === bookingId) {
@@ -81,12 +94,12 @@ const Booking = () => {
       setDisabledLeaveButtons((prevState) => ({
         ...prevState,
         [bookingId]: true,
-      })); // Disable the Leave button for the corresponding booking
+      }));
     } catch (error) {
       console.error("Error updating booking:", error);
     }
   };
-  // Function to update booking data in Firebase and local state
+
   const updateBookingInFirebase = async (newBookingData) => {
     try {
       if (!selectedBooking) {
@@ -98,9 +111,8 @@ const Booking = () => {
         .database()
         .ref("bookings")
         .child(selectedBooking.id);
-      await bookingsRef.update(newBookingData); // Update booking data in Firebase
+      await bookingsRef.update(newBookingData);
 
-      // Update local state of userBookings with the updated data
       setUserBookings((prevUserBookings) => {
         const updatedUserBookings = prevUserBookings.map((booking) => {
           if (booking.id === selectedBooking.id) {
@@ -113,13 +125,12 @@ const Booking = () => {
       });
 
       console.log("Booking updated successfully!");
-      closeModal(); // Close the modal after updating the booking
+      closeModal();
     } catch (error) {
       console.error("Error updating booking:", error);
     }
   };
 
-  // Function to handle editing a booking
   const handleEditBooking = () => {
     const inTimeInput = document.getElementById("inTimeInput").value;
     const outTimeInput = document.getElementById("outTimeInput").value;
@@ -127,28 +138,26 @@ const Booking = () => {
       intime: inTimeInput,
       outtime: outTimeInput,
     };
-    updateBookingInFirebase(newBookingData); // Call the function to update booking data in Firebase
+    updateBookingInFirebase(newBookingData);
   };
 
-  // Function to handle leaving a booking
   const handleLeave = (booking) => {
     const currentTime = new Date().toLocaleTimeString("en-US", {
       hour12: false,
       hour: "2-digit",
       minute: "2-digit",
-    }); // Get current time in hh:mm format
+    });
     const newBookingData = {
       outtime: currentTime,
-      leaveButtonDisabled: true, // Add leaveButtonDisabled flag to the booking data
+      leaveButtonDisabled: true,
     };
-    updateLeaveInFirebase(booking.id, newBookingData); // Call the function to update booking data in Firebase
+    updateLeaveInFirebase(booking.id, newBookingData);
   };
 
   return (
     <div className="py-8 lg:m-16">
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 rtl:text-right dark:text-gray-400">
-          {/* Table header */}
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-6 py-3">
@@ -180,7 +189,6 @@ const Booking = () => {
               </th>
             </tr>
           </thead>
-          {/* Table body */}
           <tbody>
             {userBookings.map((booking) => (
               <tr
@@ -193,7 +201,7 @@ const Booking = () => {
                 <td className="px-6 py-4">{booking.date}</td>
                 <td className="px-6 py-4">{booking.intime}</td>
                 <td className="px-6 py-4">{booking.outtime}</td>
-                <td className="px-6 py-4">Yes/No</td>
+                <td className="px-6 py-4">{booking.accessGranted}</td>
                 <td className="px-6 py-4">
                   <button
                     onClick={() => openModal(booking)}
@@ -275,7 +283,6 @@ const Booking = () => {
         </table>
       </div>
 
-      {/* Modal for editing booking */}
       {isModalOpen && selectedBooking && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-8 bg-white rounded-lg shadow-md">

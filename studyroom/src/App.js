@@ -10,7 +10,7 @@ import About from "./pages/About" ;
 import Contact from "./pages/Contact" ;
 import BatchPreferenceChart from "./pages/BatchPreferenceChart";
 import Panel from "./pages/Panel";
-
+import AllBookings from "./pages/AllBookings";
 const msalConfig = {
   auth: {
     clientId: '7a0d8f1c-e9d7-4156-9152-72a97a6242dd',
@@ -33,6 +33,7 @@ function App() {
           <Route path="/About" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
           <Route path="/Panel" element={<Panel />} />
+          <Route path="/AllBookings" element={<AllBookings />} />
         </Routes>
         <Footer />
       </BrowserRouter>

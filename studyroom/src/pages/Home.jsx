@@ -9,7 +9,7 @@ const Home = () => {
   const { instance, accounts, inProgress } = useMsal();
   console.log("Accounts:", accounts);
   console.log("InProgress:", inProgress);
-  const isAuthenticated = useIsAuthenticated(); // Use useIsAuthenticated
+  // const isAuthenticated = useIsAuthenticated(); // Use useIsAuthenticated
   const [email, setEmail] = useState("");
   const [studentId, setStudentId] = useState("");
   const [fullName, setFullName] = useState("");
@@ -69,8 +69,9 @@ const Home = () => {
         intime,
         outtime,
         purpose,
-        date: today, // Include today's date in the booking
-        "Access-Granted": "No" // Add Access-Granted field with default value
+        date: today, 
+        "Access-Granted": "Yes", // Add Access-Granted field with default value
+        "Door": "Locked"
       })
       .then(() => {
         console.log("Booking confirmed!");

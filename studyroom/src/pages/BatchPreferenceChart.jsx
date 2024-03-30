@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
-import { Line, Bar } from "react-chartjs-2";
+
 import Chart from "chart.js/auto"; // Import Chart.js
 
 export default function StudyRoomBookingTrend() {

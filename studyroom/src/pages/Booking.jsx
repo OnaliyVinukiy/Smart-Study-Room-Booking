@@ -175,6 +175,49 @@ const Booking = () => {
       console.error("Error updating door status:", error);
     }
   };
+  const handleCancel = async (booking) => {
+    try {
+      const bookingsRef = firebase.database().ref("bookings").child(booking.id);
+      await bookingsRef.remove();
+      setUserBookings((prevUserBookings) =>
+        prevUserBookings.filter((prevBooking) => prevBooking.id !== booking.id)
+      );
+      console.log("Booking cancelled successfully!");
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+    }
+  };
+  
+  const handleEmergencyUnlock = async (booking) => {
+    try {
+      const newDoorValue = 'Unlocked';
+      const bookingsRef = firebase.database().ref("bookings");
+      const snapshot = await bookingsRef
+        .orderByChild("email")
+        .equalTo(accounts[0].username)
+        .limitToLast(1)
+        .once("value");
+      const latestBooking = snapshot.val();
+      if (latestBooking) {
+        const latestBookingId = Object.keys(latestBooking)[0];
+        await bookingsRef.child(latestBookingId).update({ Door: newDoorValue });
+        setLocked(false); // Set the locked state to false
+        setDisplayText('Study room is Unlocked!'); // Update display text accordingly
+      }
+    } catch (error) {
+      console.error("Error updating door status:", error);
+    }
+  };
+  
+  
+  // Function to check if the emergency unlock button should be visible
+  const isEmergencyUnlockVisible = (booking) => {
+    const outTime = new Date(`${booking.date}T${booking.outtime}`);
+    const fifteenMinutesInMilliseconds = 15 * 60 * 1000;
+    const currentTime = new Date();
+    return currentTime < new Date(outTime.getTime() + fifteenMinutesInMilliseconds);
+  };
+  
   
 
   return (
@@ -250,23 +293,27 @@ const Booking = () => {
                   </button>
                 </td>
                 <td className="px-6 py-4">
-                  <button
-                    className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${
-                      booking.date !== currentDate ||
-                      booking.leaveButtonDisabled ||
-                      outTimeExceeded[booking.id]
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                    disabled={
-                      booking.date !== currentDate ||
-                      booking.leaveButtonDisabled ||
-                      outTimeExceeded[booking.id]
-                    }
-                  >
-                    Cancel
-                  </button>
-                </td>
+                    <button
+                      onClick={() => handleCancel(booking)}
+                      className={`font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4 ${
+                        booking.date !== currentDate ||
+                        booking.leaveButtonDisabled ||
+                        outTimeExceeded[booking.id] ||
+                        booking.accessGranted === 'granted' // Disable if access granted
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
+                      disabled={
+                        booking.date !== currentDate ||
+                        booking.leaveButtonDisabled ||
+                        outTimeExceeded[booking.id] ||
+                        booking.accessGranted === 'granted' // Disable if access granted
+                      }
+                    >
+                      Cancel
+                    </button>
+                  </td>
+
                 <td className="px-6 py-4">
                   <button
                     onClick={() => handleLeave(booking)}
@@ -287,7 +334,7 @@ const Booking = () => {
                   </button>
                 </td>
                 <td className="px-6 py-4">
-                  {booking.accessGranted === 'Yes' && !(booking.date !== currentDate || booking.leaveButtonDisabled || outTimeExceeded[booking.id]) && (
+                  {booking.accessGranted === 'granted' && !(booking.date !== currentDate || booking.leaveButtonDisabled || outTimeExceeded[booking.id]) && (
                     <button
                       type="button"
                       className={`text-white flex items-center justify-center ${
@@ -301,7 +348,22 @@ const Booking = () => {
                       {locked ? 'Lock' : 'Unlock'}
                     </button>
                   )}
+                  
+                  {isEmergencyUnlockVisible(booking) && outTimeExceeded[booking.id] && booking.date === currentDate && (
+                      <button
+                        type="button"
+                        className="text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-xs px-2 py-2 me-1 mb-1 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                        onClick={handleLockClick}
+                      >
+                        
+                       
+                      {locked ? 'Emergency Lock' : 'Emergency Unlock'}
+                      </button>
+                    )}
+
+
                 </td>
+
 
 
 

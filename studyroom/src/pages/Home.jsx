@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useMsal, useIsAuthenticated } from "@azure/msal-react"; // Import useIsAuthenticated
+import { useMsal, useIsAuthenticated } from "@azure/msal-react";
 import { InteractionStatus } from "@azure/msal-browser";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
@@ -7,9 +7,7 @@ import 'firebase/compat/auth';
 
 const Home = () => {
   const { instance, accounts, inProgress } = useMsal();
-  console.log("Accounts:", accounts);
-  console.log("InProgress:", inProgress);
-  // const isAuthenticated = useIsAuthenticated(); // Use useIsAuthenticated
+  const [successMessage, setSuccessMessage] = useState("");
   const [email, setEmail] = useState("");
   const [studentId, setStudentId] = useState("");
   const [fullName, setFullName] = useState("");
@@ -20,8 +18,7 @@ const Home = () => {
   const [isAvailable, setIsAvailable] = useState(true);
   const [conflictingBooking, setConflictingBooking] = useState(null);
   const [today] = useState(new Date().toISOString().split('T')[0]);
-  
- 
+
   useEffect(() => {
     if (!intime || !outtime) return;
   
@@ -70,11 +67,11 @@ const Home = () => {
         outtime,
         purpose,
         date: today, 
-        "Access-Granted": "Yes", // Add Access-Granted field with default value
+        "Access-Granted": "No",
         "Door": "Locked"
       })
       .then(() => {
-        console.log("Booking confirmed!");
+        setSuccessMessage('Booking Placed Successfully!');
         setEmail("");
         setStudentId("");
         setFullName("");
@@ -97,6 +94,7 @@ const Home = () => {
           <>
             <h1>Welcome, {accounts[0].name}</h1>
             <h1 className="text-2xl md:text-4xl font-bold text-green-800 mb-6 text-center">Book a Study Room</h1>
+           
             <form className="space-y-4" onSubmit={handleSubmit}>
             
            
@@ -208,6 +206,7 @@ const Home = () => {
           >
             Confirm Booking
           </button>
+          {successMessage && <p className="text-green-700">{successMessage}</p>}
         </form>
 
         {!isAvailable && conflictingBooking && (

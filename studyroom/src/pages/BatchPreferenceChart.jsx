@@ -33,8 +33,10 @@ export default function StudyRoomBookingTrend() {
     const bookingsOnDay = bookingData.filter(
       (booking) => getDayOfWeek(booking.date) === day
     );
-    const bookingCountsByTime = bookingsOnDay.reduce((counts, booking) => {
-      const hour = parseInt(booking.intime.split(":")[0]); // Extract hours and convert to number
+    const bookingTimes = bookingsOnDay.map((booking) => booking.intime);
+    const validBookingTimes = bookingTimes.filter((time) => time); // Filter out undefined times
+    const bookingCountsByTime = validBookingTimes.reduce((counts, time) => {
+      const hour = parseInt(time.split(":")[0]); // Extract hours and convert to number
       counts[hour] = (counts[hour] || 0) + 1;
       return counts;
     }, {});
@@ -46,7 +48,7 @@ export default function StudyRoomBookingTrend() {
       (time) => `${time}:00-${parseInt(time) + 1}:00`
     ).join(", ");
   };
-
+  
   useEffect(() => {
     const fetchData = async () => {
       const bookingsRef = firebase.database().ref("bookings");

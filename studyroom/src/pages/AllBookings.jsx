@@ -249,7 +249,7 @@ const AllBookings = () => {
                         booking.date !== currentDate ||
                         booking.leaveButtonDisabled ||
                         outTimeExceeded[booking.id] ||
-                        booking.accessGranted !== "Yes"
+                        booking.accessGranted !== "granted"
                             ? "opacity-50 cursor-not-allowed"
                             : ""
                         }`}
@@ -257,7 +257,7 @@ const AllBookings = () => {
                         booking.date !== currentDate ||
                         booking.leaveButtonDisabled ||
                         outTimeExceeded[booking.id] ||
-                        booking.accessGranted !== "Yes"
+                        booking.accessGranted !== "granted"
                         }
                     >
                         Panel

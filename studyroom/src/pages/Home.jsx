@@ -17,7 +17,21 @@ const Home = () => {
   const [purpose, setPurpose] = useState("");
   const [isAvailable, setIsAvailable] = useState(true);
   const [conflictingBooking, setConflictingBooking] = useState(null);
-  const [today] = useState(new Date().toISOString().split('T')[0]);
+  const [today, setToday] = useState("");
+
+  useEffect(() => {
+    const fetchCurrentDate = () => {
+      const currentDate = new Date().toLocaleDateString('en-CA', { 
+        timeZone: 'Asia/Colombo',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).replace(/\//g, '-');
+      setToday(currentDate);
+    };
+
+    fetchCurrentDate();
+  }, []);
 
   useEffect(() => {
     if (!intime || !outtime) return;
@@ -67,7 +81,7 @@ const Home = () => {
         outtime,
         purpose,
         date: today, 
-        "Access-Granted": "No",
+        "Access-Granted": "granted",
         "Door": "Locked"
       })
       .then(() => {

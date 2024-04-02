@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
-
+import { LockClosedIcon, LockOpenIcon } from '@heroicons/react/solid';
 import Chart from "chart.js/auto"; // Import Chart.js
 
 export default function StudyRoomBookingTrend() {
@@ -14,7 +14,17 @@ export default function StudyRoomBookingTrend() {
   const peakTimeChartRef = useRef(); // Reference to the peak time periods chart instance
   const mostActiveStudentsChartRef = useRef(); // Reference to the most active students chart instance
   const peakDaysChartRef = useRef(); // Reference to the peak days chart instance
+  const [doorStatus, setDoorStatus] = useState("");
 
+  useEffect(() => {
+    if (bookingData.length > 0) {
+      // Get the latest booking
+      const latestBooking = bookingData[bookingData.length - 1];
+      // Extract the door status from the latest booking
+      const doorStatus = latestBooking["Door"] || "";
+      setDoorStatus(doorStatus);
+    }
+  }, [bookingData]);
   const getDayOfWeek = (dateString) => {
     const days = [
       "Sunday",
@@ -275,8 +285,30 @@ export default function StudyRoomBookingTrend() {
           </h3>
         </div>
       </section>
+      <section className="w-full max-w-screen-lg mb-10">
+      <h2 className="mt-10 mb-4 text-3xl font-semibold text-center">Door Status</h2>
+      <div className="flex justify-center">
+        <div className="w-full lg:w-3/4">
+          <div className="flex items-center justify-center">
+            {doorStatus === "Locked" ? (
+              <div className="flex items-center">
+                <LockClosedIcon className="h-8 w-8 text-red-500 mr-2" />
+                <p className="text-lg font-semibold text-red-500">Locked</p>
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <LockOpenIcon className="h-8 w-8 text-green-500 mr-2" />
+                <p className="text-lg font-semibold text-green-500">Unlocked</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+
 
       <div className="flex flex-col items-center p-5">
+      
         <section className="w-full max-w-screen-lg mb-10">
           <h2 className="mt-8 mb-4 text-3xl font-semibold text-center">Booking Information</h2>
           <div className="flex justify-center">
@@ -359,7 +391,7 @@ export default function StudyRoomBookingTrend() {
           ))}
         </div>
       </section>
-
+     
 
     </div>
   );

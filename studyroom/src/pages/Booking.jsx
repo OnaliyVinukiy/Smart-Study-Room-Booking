@@ -2,18 +2,36 @@ import React, { useState, useEffect } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
 import { useMsal } from "@azure/msal-react";
-import { LockClosedIcon, LockOpenIcon, LightBulbIcon } from '@heroicons/react/solid';
+import { LockClosedIcon, LockOpenIcon } from '@heroicons/react/solid';
+
 const Booking = () => {
   const { accounts } = useMsal();
   const [userBookings, setUserBookings] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [disabledLeaveButtons, setDisabledLeaveButtons] = useState({});
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const currentDate = new Date().toISOString().slice(0, 10);
-  const [locked, setLocked] = useState(false);
+  
+  // Initialize locked state with value from local storage or default to false
+  const [locked, setLocked] = useState(() => {
+    const storedLocked = localStorage.getItem('locked');
+    return storedLocked ? JSON.parse(storedLocked) : false;
+  });
+
   const [displayText, setDisplayText] = useState('');
   const [outTimeExceeded, setOutTimeExceeded] = useState({});
-
+  const currentDate = new Date().toLocaleDateString('en-CA', { 
+    timeZone: 'Asia/Colombo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).replace(/\//g, '-');
+  
+  // Store locked state in local storage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('locked', JSON.stringify(locked));
+  }, [locked]);
+  
+  
   useEffect(() => {
     const fetchUserBookings = async () => {
       try {
@@ -334,20 +352,21 @@ const Booking = () => {
                   </button>
                 </td>
                 <td className="px-6 py-4">
-                  {booking.accessGranted === 'granted' && !(booking.date !== currentDate || booking.leaveButtonDisabled || outTimeExceeded[booking.id]) && (
-                    <button
-                      type="button"
-                      className={`text-white flex items-center justify-center ${
-                        locked ? 'bg-red-700 hover:bg-red-800' : 'bg-green-700 hover:bg-green-800'
-                      } focus:outline-none focus:ring-4 focus:ring-${locked ? 'red' : 'green'}-300 font-medium rounded-full text-xs px-2 py-2 me-1 mb-1 dark:bg-${
-                        locked ? 'red' : 'green'
-                      }-600 dark:hover:bg-${locked ? 'red' : 'green'}-700 dark:focus:ring-${locked ? 'red' : 'green'}-800`}
-                      onClick={handleLockClick}
-                    >
-                      {locked ? <LockClosedIcon className="w-3 h-3 mr-1" /> : <LockOpenIcon className="w-3 h-3 mr-1" />}
-                      {locked ? 'Lock' : 'Unlock'}
-                    </button>
-                  )}
+                {booking.accessGranted === 'granted' && booking.date === currentDate.slice(0, 10) && !booking.leaveButtonDisabled && !outTimeExceeded[booking.id] && (
+  <button
+    type="button"
+    className={`text-white flex items-center justify-center ${
+      locked ? 'bg-red-700 hover:bg-red-800' : 'bg-green-700 hover:bg-green-800'
+    } focus:outline-none focus:ring-4 focus:ring-${locked ? 'red' : 'green'}-300 font-medium rounded-full text-xs px-2 py-2 me-1 mb-1 dark:bg-${
+      locked ? 'red' : 'green'
+    }-600 dark:hover:bg-${locked ? 'red' : 'green'}-700 dark:focus:ring-${locked ? 'red' : 'green'}-800`}
+    onClick={handleLockClick}
+  >
+    {locked ? <LockClosedIcon className="w-3 h-3 mr-1" /> : <LockOpenIcon className="w-3 h-3 mr-1" />}
+    {locked ? 'Lock' : 'Unlock'}
+  </button>
+)}
+
                   
                   {isEmergencyUnlockVisible(booking) && outTimeExceeded[booking.id] && booking.date === currentDate && (
                       <button

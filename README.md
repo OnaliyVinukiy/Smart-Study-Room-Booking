@@ -4,7 +4,16 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+<<<<<<< HEAD
 In the project directory, you can run:
+=======
+<h4>Features</h4>
+<ul>
+  <li>Collision free study room booking</li>
+   <li>Edit and cancel bookings</li>
+<li>Smooth and secure login through NSBM Student Account</li>
+</ul>
+>>>>>>> 7a273e45ca1f6f708835592074ce54d944f06d1e
 
 ### `npm start`
 

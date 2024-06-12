@@ -3,24 +3,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import 'firebase/compat/auth';
 
-const StudyRoomAvailability = () => {
-  const [bookings, setBookings] = useState([]);
-  const [today] = useState(new Date().toISOString().split('T')[0]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const bookingsRef = firebase.database().ref('bookings');
-      const snapshot = await bookingsRef.once('value');
-      const bookingsData = snapshot.val();
-      if (bookingsData) {
-        const bookingsArray = Object.values(bookingsData).filter(booking => booking.date === today);
-        setBookings(bookingsArray);
-      }
-    };
-
-    fetchData();
-  }, [today]);
-
+const StudyRoomChart = ({ roomNo, bookings, today }) => {
   const renderSlots = () => {
     const timeSlots = [];
     for (let i = 8; i <= 17; i++) { // Assuming study room available from 8 AM to 5 PM
@@ -31,7 +14,7 @@ const StudyRoomAvailability = () => {
             {isSlotBooked(i) ? (
               <>
                 <svg className="w-6 h-6 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span className="text-red-500">Booked until {getBookingEndTime(i)}</span>
+                <span className="text-red-500">Booked from {getBookingStartTime(i)} to {getBookingEndTime(i)}</span>
               </>
             ) : (
               <>
@@ -54,6 +37,20 @@ const StudyRoomAvailability = () => {
     });
   };
 
+  const getBookingStartTime = (hour) => {
+    const booking = bookings.find(booking => {
+      const intimeHour = parseInt(booking.intime.split(":")[0], 10);
+      const outtimeHour = parseInt(booking.outtime.split(":")[0], 10);
+      return hour >= intimeHour && hour < outtimeHour;
+    });
+
+    if (booking) {
+      return booking.intime;
+    }
+
+    return null;
+  };
+
   const getBookingEndTime = (hour) => {
     const booking = bookings.find(booking => {
       const intimeHour = parseInt(booking.intime.split(":")[0], 10);
@@ -70,7 +67,7 @@ const StudyRoomAvailability = () => {
 
   return (
     <div className="max-w-lg mx-auto mt-8">
-      <h1 className="text-2xl font-semibold mb-4">Study Room Availability for {today}</h1>
+      <h1 className="text-2xl font-semibold mb-4">Study Room {roomNo} Availability for {today}</h1>
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
         <div className="px-4 py-5 sm:px-6">
           <div className="flex items-center justify-between">
@@ -81,6 +78,35 @@ const StudyRoomAvailability = () => {
           {renderSlots()}
         </div>
       </div>
+    </div>
+  );
+};
+
+const StudyRoomAvailability = () => {
+  const [bookings, setBookings] = useState([]);
+  const [today] = useState(new Date().toISOString().split('T')[0]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const bookingsRef = firebase.database().ref('bookings');
+      const snapshot = await bookingsRef.once('value');
+      const bookingsData = snapshot.val();
+      if (bookingsData) {
+        const bookingsArray = Object.values(bookingsData).filter(booking => booking.date === today);
+        setBookings(bookingsArray);
+      }
+    };
+
+    fetchData();
+  }, [today]);
+
+  const bookingsRoomA = bookings.filter(booking => booking.roomNo === 'A');
+  const bookingsRoomB = bookings.filter(booking => booking.roomNo === 'B');
+
+  return (
+    <div>
+      <StudyRoomChart roomNo="47 A" bookings={bookingsRoomA} today={today} />
+      <StudyRoomChart roomNo="47 B" bookings={bookingsRoomB} today={today} />
     </div>
   );
 };

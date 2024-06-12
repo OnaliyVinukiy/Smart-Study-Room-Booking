@@ -19,12 +19,7 @@ const Booking = () => {
 
   const [displayText, setDisplayText] = useState('');
   const [outTimeExceeded, setOutTimeExceeded] = useState({});
-  const currentDate = new Date().toLocaleDateString('en-CA', { 
-    timeZone: 'Asia/Colombo',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).replace(/\//g, '-');
+  const currentDate = new Date().toISOString().slice(0, 10);
   
   // Store locked state in local storage whenever it changes
   useEffect(() => {
@@ -352,20 +347,20 @@ const Booking = () => {
                   </button>
                 </td>
                 <td className="px-6 py-4">
-                {booking.accessGranted === 'granted' && booking.date === currentDate.slice(0, 10) && !booking.leaveButtonDisabled && !outTimeExceeded[booking.id] && (
-  <button
-    type="button"
-    className={`text-white flex items-center justify-center ${
-      locked ? 'bg-red-700 hover:bg-red-800' : 'bg-green-700 hover:bg-green-800'
-    } focus:outline-none focus:ring-4 focus:ring-${locked ? 'red' : 'green'}-300 font-medium rounded-full text-xs px-2 py-2 me-1 mb-1 dark:bg-${
-      locked ? 'red' : 'green'
-    }-600 dark:hover:bg-${locked ? 'red' : 'green'}-700 dark:focus:ring-${locked ? 'red' : 'green'}-800`}
-    onClick={handleLockClick}
-  >
-    {locked ? <LockClosedIcon className="w-3 h-3 mr-1" /> : <LockOpenIcon className="w-3 h-3 mr-1" />}
-    {locked ? 'Lock' : 'Unlock'}
-  </button>
-)}
+                { !(booking.date !== currentDate || booking.leaveButtonDisabled || outTimeExceeded[booking.id]) && (
+                    <button
+                      type="button"
+                      className={`text-white flex items-center justify-center ${
+                        locked ? 'bg-red-700 hover:bg-red-800' : 'bg-green-700 hover:bg-green-800'
+                      } focus:outline-none focus:ring-4 focus:ring-${locked ? 'red' : 'green'}-300 font-medium rounded-full text-xs px-2 py-2 me-1 mb-1 dark:bg-${
+                        locked ? 'red' : 'green'
+                      }-600 dark:hover:bg-${locked ? 'red' : 'green'}-700 dark:focus:ring-${locked ? 'red' : 'green'}-800`}
+                      onClick={handleLockClick}
+                    >
+                      {locked ? <LockClosedIcon className="w-3 h-3 mr-1" /> : <LockOpenIcon className="w-3 h-3 mr-1" />}
+                      {locked ? 'Lock' : 'Unlock'}
+                    </button>
+                  )}
 
                   
                   {isEmergencyUnlockVisible(booking) && outTimeExceeded[booking.id] && booking.date === currentDate && (

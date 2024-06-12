@@ -21,18 +21,19 @@ const Home = () => {
   const [today] = useState(new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
-    if (!intime || !outtime) return;
-  
+    if (!intime || !outtime || !roomNo) return;
+
     const fetchData = async () => {
       const bookingsRef = firebase.database().ref('bookings');
       const snapshot = await bookingsRef.once('value');
       const bookings = snapshot.val();
-      
+
       if (!bookings) return;
-  
+
       const conflict = Object.values(bookings).find(booking => {
         return (
           booking.date === today &&
+          booking.roomNo === roomNo && // Check for the same room number
           (
             (booking.intime <= intime && intime <= booking.outtime) ||
             (booking.intime <= outtime && outtime <= booking.outtime) ||
@@ -41,7 +42,7 @@ const Home = () => {
           )
         );
       });
-  
+
       if (conflict) {
         setIsAvailable(false);
         setConflictingBooking(conflict);
@@ -50,14 +51,13 @@ const Home = () => {
         setConflictingBooking(null);
       }
     };
-  
+
     fetchData();
-  }, [intime, outtime, today]);
-  
+  }, [intime, outtime, today, roomNo]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+
     if (isAvailable) {
       firebase.database().ref("bookings").push({
         email,
@@ -68,7 +68,7 @@ const Home = () => {
         intime,
         outtime,
         purpose,
-        date: today, 
+        date: today,
         "Access-Granted": "Yes",
         "Door": "Locked"
       })
@@ -93,22 +93,23 @@ const Home = () => {
         studentId: conflictingBooking.studentId,
         fullName: conflictingBooking.fullName,
         batch: conflictingBooking.batch,
-        batch: conflictingBooking.roomNo,
+        roomNo: conflictingBooking.roomNo,
         intime: conflictingBooking.intime,
         outtime: conflictingBooking.outtime,
         purpose: conflictingBooking.purpose,
-        date: conflictingBooking.date, 
+        date: conflictingBooking.date,
         "Access-Granted": conflictingBooking["Access-Granted"],
         "Door": conflictingBooking["Door"]
       })
       .then(() => {
-        setSuccessMessage('Conflicting Booking Detected!');
+        setSuccessMessage(`Sorry! Study room is already booked until ${conflictingBooking.outtime}.`);
       })
       .catch((error) => {
         console.error("Error adding conflicting booking: ", error);
       });
     }
   };
+
   
 
   return (
@@ -248,9 +249,7 @@ const Home = () => {
           {successMessage && <p className="text-green-700">{successMessage}</p>}
         </form>
 
-        {!isAvailable && conflictingBooking && (
-              <p>Study room is already booked until {conflictingBooking.outtime}.</p>
-            )}
+        
           </>
         ) : (
           <>

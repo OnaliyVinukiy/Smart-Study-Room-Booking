@@ -12,26 +12,13 @@ const Home = () => {
   const [studentId, setStudentId] = useState("");
   const [fullName, setFullName] = useState("");
   const [batch, setBatch] = useState("");
+  const [roomNo, setroomNo] = useState("");
   const [intime, setInTime] = useState("");
   const [outtime, setOutTime] = useState("");
   const [purpose, setPurpose] = useState("");
   const [isAvailable, setIsAvailable] = useState(true);
   const [conflictingBooking, setConflictingBooking] = useState(null);
-  const [today, setToday] = useState("");
-
-  useEffect(() => {
-    const fetchCurrentDate = () => {
-      const currentDate = new Date().toLocaleDateString('en-CA', { 
-        timeZone: 'Asia/Colombo',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      }).replace(/\//g, '-');
-      setToday(currentDate);
-    };
-
-    fetchCurrentDate();
-  }, []);
+  const [today] = useState(new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
     if (!intime || !outtime) return;
@@ -77,11 +64,12 @@ const Home = () => {
         studentId,
         fullName,
         batch,
+        roomNo,
         intime,
         outtime,
         purpose,
         date: today, 
-        "Access-Granted": "granted",
+        "Access-Granted": "Yes",
         "Door": "Locked"
       })
       .then(() => {
@@ -90,12 +78,34 @@ const Home = () => {
         setStudentId("");
         setFullName("");
         setBatch("");
+        setroomNo("");
         setInTime("");
         setOutTime("");
         setPurpose("");
       })
       .catch((error) => {
         console.error("Error adding booking: ", error);
+      });
+    } else {
+      // Save conflicting booking details in a separate node
+      firebase.database().ref("conflictingBookings").push({
+        email: conflictingBooking.email,
+        studentId: conflictingBooking.studentId,
+        fullName: conflictingBooking.fullName,
+        batch: conflictingBooking.batch,
+        batch: conflictingBooking.roomNo,
+        intime: conflictingBooking.intime,
+        outtime: conflictingBooking.outtime,
+        purpose: conflictingBooking.purpose,
+        date: conflictingBooking.date, 
+        "Access-Granted": conflictingBooking["Access-Granted"],
+        "Door": conflictingBooking["Door"]
+      })
+      .then(() => {
+        setSuccessMessage('Conflicting Booking Detected!');
+      })
+      .catch((error) => {
+        console.error("Error adding conflicting booking: ", error);
       });
     }
   };
@@ -164,6 +174,21 @@ const Home = () => {
               onChange={(e) => setBatch(e.target.value)}
             />
           </div>
+          <div>
+              <label htmlFor="roomNo" className="block text-sm font-medium text-gray-700 mb-1">RoomNo</label>
+              <select
+                id="roomNo"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500"
+                style={{ width: '100%', height: '45px', fontSize: '1rem', maxWidth: '100%' }}
+                value={roomNo}
+                onChange={(e) => setroomNo(e.target.value)}
+              >
+                <option value="">Select Room No</option>
+                <option value="A">47 A</option>
+                <option value="B">47 B</option>
+              </select>
+            </div>
+
           <div>
             <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Date</label>
             <input
@@ -248,3 +273,4 @@ const Home = () => {
   );
 }
 export default Home;
+

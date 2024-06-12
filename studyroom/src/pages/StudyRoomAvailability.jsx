@@ -66,8 +66,8 @@ const StudyRoomChart = ({ roomNo, bookings, today }) => {
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-8">
-      <h1 className="text-2xl font-semibold mb-4">Study Room {roomNo} Availability for {today}</h1>
+    <div className="max-w-lg mx-20 mt-12">
+      <h1 className="text-xl text-red-600 font-semibold mb-4">Study Room {roomNo} Availability for {today}</h1>
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
         <div className="px-4 py-5 sm:px-6">
           <div className="flex items-center justify-between">
@@ -104,7 +104,7 @@ const StudyRoomAvailability = () => {
   const bookingsRoomB = bookings.filter(booking => booking.roomNo === 'B');
 
   return (
-    <div>
+    <div className="flex flex-wrap justify-center">
       <StudyRoomChart roomNo="47 A" bookings={bookingsRoomA} today={today} />
       <StudyRoomChart roomNo="47 B" bookings={bookingsRoomB} today={today} />
     </div>

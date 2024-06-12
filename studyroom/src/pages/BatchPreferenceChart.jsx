@@ -25,6 +25,7 @@ export default function StudyRoomBookingTrend() {
       setDoorStatus(doorStatus);
     }
   }, [bookingData]);
+
   const getDayOfWeek = (dateString) => {
     const days = [
       "Sunday",
@@ -391,8 +392,6 @@ export default function StudyRoomBookingTrend() {
           ))}
         </div>
       </section>
-     
-
     </div>
   );
 }
